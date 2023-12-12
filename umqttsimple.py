@@ -1,7 +1,4 @@
-try:
-    import usocket as socket
-except:
-    import socket
+import socket
 import ustruct as struct
 from ubinascii import hexlify
 
