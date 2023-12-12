@@ -104,10 +104,10 @@ try:
     client = connect_and_subscribe(mqtt_server=mqtt_server, mqtt_port=mqtt_port, client_name=mqtt_client_name,
                                    topic_sub=mqtt_topic)
     print("OK!!")
-    #radio = Radio(radio_config=config.get_config()["radio"], radio_wiring=config.get_config()["wiring"])
-    #protocol_handler = Handler(addresses=config.get_config()["addresses"], debug=config.get_config()["debug"],
-    #                           autodiscovery_callback=on_new_blind_discovery)
-    #radio.client_loop(callback=on_receive_data, svc_handler=ext_handler)
+    radio = Radio(radio_config=config.get_config()["radio"], radio_wiring=config.get_config()["wiring"])
+    protocol_handler = Handler(addresses=config.get_config()["addresses"], debug=config.get_config()["debug"],
+                               autodiscovery_callback=on_new_blind_discovery)
+    radio.client_loop(callback=on_receive_data, svc_handler=ext_handler)
     client.loop_forever()
 except OSError as e:
     print(f"Error occurred: {e}")
