@@ -42,8 +42,7 @@ class Handler:
                 print("----> Remote: " + map_byte_to_address(dests[0]))
                 print("status is: " + self.get_blind_state(payload=payload))
                 blind_pos = self.get_blind_state(payload=payload)
-                print(
-                #    f"Blind id: {map_byte_to_address(src)} ----> Remote {map_byte_to_address(dests[0])} Status is: {self.get_blind_state(payload=payload)}")
+                print(f"Blind id: {map_byte_to_address(src)} ----> Remote {map_byte_to_address(dests[0])} Status is: {self.get_blind_state(payload=payload)}")
 
                 return {"remote": map_byte_to_address(dests[0]), "blind_id": map_byte_to_address(src), "channel": chl,
                         "action": "position", "rssi": rssi, "position": blind_pos}
