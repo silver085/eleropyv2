@@ -11,7 +11,7 @@ class CC1101:
         self.pktRec = True
 
     def __init__(self, spibus, spics, speed, gdo0, gdo2):
-
+        self.initialised = false
         if (os.uname()[0] == 'esp32'):
             from machine import Pin, SPI
             self.gdo0 = Pin(gdo0, Pin.IN)
@@ -97,6 +97,7 @@ class CC1101:
             time.sleep(0.0001)
             print(".", end='')
         print("channel cleared");
+        self.initialised = True
 
     def transmit(self, msg):
 
