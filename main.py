@@ -1,5 +1,4 @@
 import json
-import time
 from config.config import Config
 from protocol.handler import Handler
 import paho.mqtt.client as mqtt
@@ -16,11 +15,11 @@ def on_new_blind_discovery(source_address, dest_address, channel, position):
     print(f"New blind discovered: {source_address} -> {dest_address} [{channel}]")
     if position is None:
         online_blind = {"status": "new_blind", "source": source_address, "destination": dest_address}
-        client.publish(topic=status_topic, msg=json.dumps(online_blind))
+        client.publish(topic=status_topic, payload=json.dumps(online_blind))
     else:
         online_blind = {"status": "blind_position", "source": source_address, "destination": dest_address,
                         "position": position}
-        client.publish(topic=status_topic, msg=json.dumps(online_blind))
+        client.publish(topic=status_topic, payload=json.dumps(online_blind))
     # config.add_address(source_address, dest_address, channel)
     pass
 
@@ -28,39 +27,17 @@ def on_new_blind_discovery(source_address, dest_address, channel, position):
 def on_receive_data(data):
     rcv = protocol_handler.on_receive_data(data)
     if rcv is not None:
-        client.publish(topic=base_topic + rcv["remote"] + "/" + rcv["blind_id"] + "/availability", msg="online")
+        client.publish(topic=base_topic + rcv["remote"] + "/" + rcv["blind_id"] + "/availability", payload="online")
         if rcv["action"] == "position":
-            client.publish(topic=base_topic + rcv["remote"] + "/" + rcv["blind_id"] + "/status", msg=rcv["position"])
+            client.publish(topic=base_topic + rcv["remote"] + "/" + rcv["blind_id"] + "/status", payload=rcv["position"])
     pass
 
 
-def send_ping():
-    global attributes_topic
-    client.ping()
-
-
 def ext_handler():
-    global last_tick
-    try:
-
-        if last_tick == None:
-            last_tick = time.time()
-            print("setted tick time")
-        else:
-            if time.time() - last_tick > 5:
-                send_ping()
-                last_tick = time.time()
-                print("Sent ping!")
-                # b_id = [0xC3, 0x01, 0x38, 0x01]
-                # r_id = [0xCE, 0x73, 0x55]
-                # radiomessage = protocol_handler.elero.construct_msg(remote_addr=r_id, blind_addr=b_id, command="Check")
-                # radio.raw_transmit(radiomessage, 10)
-
-    except OSError as e:
-        print(f"Error occurred: {e}")
+    pass
 
 
-def sub_cb(client, userdata,  msg):
+def sub_cb(client, userdata, msg):
     str_topic = msg.topic
     str_payload = msg.payload.decode()
     destination_str = str_topic.replace("elero/action/", "")
@@ -78,6 +55,7 @@ def on_connect(client, userdata, flags, rc):
     client.publish(topic=availability_topic, payload="online", retain=False)
     print(f"Published alive to {availability_topic}")
 
+
 def connect_and_subscribe(client_name, mqtt_server, mqtt_port, topic_sub):
     print(f"Connecting to broker {mqtt_server}...")
     client = mqtt.Client()
@@ -88,7 +66,6 @@ def connect_and_subscribe(client_name, mqtt_server, mqtt_port, topic_sub):
 
     print(f"Connecting to... ({mqtt_server}:{mqtt_port}")
     return client
-
 
 
 try:
