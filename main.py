@@ -34,7 +34,7 @@ def on_receive_data(data):
 
 
 def ext_handler():
-    pass
+    client.loop_read()
 
 
 def sub_cb(client, userdata, msg):
@@ -84,7 +84,7 @@ try:
     radio = Radio(radio_config=config.get_config()["radio"], radio_wiring=config.get_config()["wiring"])
     protocol_handler = Handler(addresses=config.get_config()["addresses"], debug=config.get_config()["debug"],
                                autodiscovery_callback=on_new_blind_discovery)
-    client.loop_start()
+
     radio.client_loop(callback=on_receive_data, svc_handler=ext_handler)
 
 except OSError as e:
