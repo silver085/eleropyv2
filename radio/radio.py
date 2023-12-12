@@ -7,8 +7,6 @@ class Radio:
         if radio_config:
             self.radio_config = radio_config
             self.radio_wiring = radio_wiring
-            import gc
-            gc.collect()
             self.radio = CC1101(spibus=self.radio_wiring["spibus"], spics=self.radio_wiring["spics"],
                                 speed=self.radio_wiring["speed"], gdo0=self.radio_wiring["gdo0"],
                                 gdo2=self.radio_wiring["gdo2"])

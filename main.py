@@ -2,11 +2,8 @@ import json
 import time
 from config.config import Config
 from protocol.handler import Handler
-import gc
 from umqttsimple import MQTTClient
 
-gc.enable()
-gc.collect()
 
 from radio.radio import Radio
 

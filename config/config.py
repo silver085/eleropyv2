@@ -10,9 +10,6 @@ class Config:
         try:
             with open(self.config_path) as config_file:
                 self.config_data = json.load(config_file)
-            import gc
-            gc.collect()
-            gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
         except Exception as err:
             print("Error: ", err)
             print("Couldn't load configuration, exiting.")
