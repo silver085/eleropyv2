@@ -26,7 +26,7 @@ class Radio:
 
             # time.sleep(self.radio_config["sleep_time"])
             import subprocess
-            #subprocess.run(["sleep", "0.01"])
+            time.sleep(0.01)
 
     def raw_transmit(self, data, repeat):
         if self.radio.initialised:
