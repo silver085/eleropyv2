@@ -21,10 +21,12 @@ class Radio:
             data = self.getData()
             svc_handler()
             if data:
-               print("Data received, firing callback...")
-               callback(data)
+                print("Data received, firing callback...")
+                callback(data)
 
-            time.sleep(self.radio_config["sleep_time"])
+            # time.sleep(self.radio_config["sleep_time"])
+            import subprocess
+            subprocess.run(["sleep", self.radio_config["sleep_time"]])
 
     def raw_transmit(self, data, repeat):
         if self.radio.initialised:
