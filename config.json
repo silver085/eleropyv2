@@ -21,11 +21,11 @@
     "client_name" : "Elero_Radio",
     "server_address": "192.168.68.112",
     "server_port" : 1883,
-    "action_topic" : "home/elero/action",
-    "status_topic" : "home/elero/status",
-    "availability_topic": "home/elero/available",
-    "attributes_topic": "home/elero/attributes",
-    "base_topic": "home/elero/",
+    "action_topic" : "elero/action",
+    "status_topic" : "elero/status",
+    "availability_topic": "elero/available",
+    "attributes_topic": "elero/attributes",
+    "base_topic": "elero/",
     "user" : "esp_pub",
     "pass": "esp_pub"
   }
