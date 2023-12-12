@@ -81,7 +81,7 @@ class CC1101:
         print("Waiting for clear channel...")
         while (self.pinVal(self.gdo0) == 0):
             #time.sleep(0.0001)
-            subprocess.run(["sleep", "0.0001"])
+            #subprocess.run(["sleep", "0.0001"])
             print(".", end='')
         print("channel cleared");
         self.initialised = True
@@ -96,7 +96,7 @@ class CC1101:
         start = time.time_ns()
         while (self.pinVal(self.gdo0) == 0) and ((time.time_ns() - start) < 50000000):
             #time.sleep(0.005)
-            subprocess.run(["sleep", "0.005"])
+            #subprocess.run(["sleep", "0.005"])
 
         if (self.pinVal(self.gdo0) == 0):
             print("TIMEOUT")
@@ -104,20 +104,20 @@ class CC1101:
             self.writeBuf([0x7F] + msg)
 
         #time.sleep(0.00004)
-        subprocess.run(["sleep", "0.00004"])
+        #subprocess.run(["sleep", "0.00004"])
         self.writeCmd(0x35)
 
         start = time.time_ns()
         while (self.readReg(0xF5) != 0x13) and ((time.time_ns() - start) < 50000000):
             #time.sleep(0.005)
-            subprocess.run(["sleep", "0.005"])
+            #subprocess.run(["sleep", "0.005"])
         print("sent: ", ''.join('{:02X}:'.format(a) for a in msg), self.readReg(0xF5))
 
     def checkBuffer(self):
         data = None
         if (self.pktRec):
             #time.sleep(0.00002)
-            subprocess.run(["sleep", "0.00002"])
+            #subprocess.run(["sleep", "0.00002"])
             self.pktRec = False
             bytes_in_fifo = self.readReg(0xFB)
             if (bytes_in_fifo >= 20) and (bytes_in_fifo < 30):
@@ -135,11 +135,11 @@ class CC1101:
     def writeCmdRpi(self, cmd):
         self.spi.writebytes([cmd])
         #time.sleep(0.00004)
-        subprocess.run(["sleep", "0.00004"])
+        #subprocess.run(["sleep", "0.00004"])
     def writeRegRpi(self, reg, val):
         self.spi.xfer([reg, val])
         #time.sleep(0.00002)
-        subprocess.run(["sleep", "0.00002"])
+        #subprocess.run(["sleep", "0.00002"])
     def writeBufRpi(self, msg):
         self.spi.xfer2(msg)
 
