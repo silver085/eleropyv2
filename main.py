@@ -1,6 +1,5 @@
 import json
 import time
-import machine
 from config.config import Config
 from protocol.handler import Handler
 import gc
@@ -30,15 +29,12 @@ def on_new_blind_discovery(source_address, dest_address, channel, position):
     pass
 
 
-
-
-
 def on_receive_data(data):
     rcv = protocol_handler.on_receive_data(data)
     if rcv is not None:
-        client.publish(topic=base_topic+rcv["remote"]+"/"+rcv["blind_id"]+"/availability", msg="online")
+        client.publish(topic=base_topic + rcv["remote"] + "/" + rcv["blind_id"] + "/availability", msg="online")
         if rcv["action"] == "position":
-            client.publish(topic=base_topic+rcv["remote"]+"/"+rcv["blind_id"]+"/status", msg=rcv["position"])
+            client.publish(topic=base_topic + rcv["remote"] + "/" + rcv["blind_id"] + "/status", msg=rcv["position"])
     pass
 
 
@@ -59,15 +55,13 @@ def ext_handler():
                 send_ping()
                 last_tick = time.time()
                 print("Sent ping!")
-                #b_id = [0xC3, 0x01, 0x38, 0x01]
-                #r_id = [0xCE, 0x73, 0x55]
-                #radiomessage = protocol_handler.elero.construct_msg(remote_addr=r_id, blind_addr=b_id, command="Check")
-                #radio.raw_transmit(radiomessage, 10)
+                # b_id = [0xC3, 0x01, 0x38, 0x01]
+                # r_id = [0xCE, 0x73, 0x55]
+                # radiomessage = protocol_handler.elero.construct_msg(remote_addr=r_id, blind_addr=b_id, command="Check")
+                # radio.raw_transmit(radiomessage, 10)
 
     except OSError as e:
         restart_and_reconnect()
-
-
 
 
 def sub_cb(topic, msg):
@@ -85,7 +79,7 @@ def connect_and_subscribe(client_name, mqtt_server, mqtt_port, topic_sub):
                         ssl=False)
     client.set_callback(sub_cb)
     client.connect()
-    client.subscribe(base_topic+"action/#")
+    client.subscribe(base_topic + "action/#")
     print('Connected to %s MQTT broker, subscribed to %s topic' % (mqtt_server, topic_sub))
     client.publish(topic=availability_topic, msg="online", retain=False)
     return client
@@ -94,7 +88,6 @@ def connect_and_subscribe(client_name, mqtt_server, mqtt_port, topic_sub):
 def restart_and_reconnect():
     print('Failed to connect to MQTT broker. Reconnecting...')
     time.sleep(10)
-    machine.reset()
 
 
 try:

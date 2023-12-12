@@ -19,8 +19,7 @@ class Config:
             exit(-255)
         except KeyboardInterrupt:
             print("Detected keyboard interrupt!")
-            import machine
-            machine.reset()
+
 
     def save_config(self):
         try:
