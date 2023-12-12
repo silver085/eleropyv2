@@ -6,7 +6,7 @@ class Config:
 
     def __init__(self):
         print("Current path is: " + os.getcwd())
-        self.config_path = os.getcwd() + "config.json"
+        self.config_path = os.getcwd() + "/config.json"
         try:
             with open(self.config_path) as config_file:
                 self.config_data = json.load(config_file)
