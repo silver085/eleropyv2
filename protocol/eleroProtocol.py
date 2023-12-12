@@ -192,7 +192,7 @@ class EleroProtocol():
             crc = msg[-1] >> 7
             return length, cnt, typ, chl, src, bwd, fwd, dests, payload, rssi, lqi, crc
         except Exception as e:
-           # print("badpkt=" + ''.join('{:02X}:'.format(a) for a in msg))
+           print("badpkt=" + ''.join('{:02X}:'.format(a) for a in msg))
             return 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
     # all messages are generated with this so it's a bit of a mess

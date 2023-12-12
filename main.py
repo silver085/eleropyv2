@@ -18,7 +18,7 @@ status_topic = None
 
 
 def on_new_blind_discovery(source_address, dest_address, channel, position):
-    # print(f"New blind discovered: {source_address} -> {dest_address} [{channel}]")
+    print(f"New blind discovered: {source_address} -> {dest_address} [{channel}]")
     if position is None:
         online_blind = {"status": "new_blind", "source": source_address, "destination": dest_address}
         client.publish(topic=status_topic, msg=json.dumps(online_blind))
@@ -53,12 +53,12 @@ def ext_handler():
         client.check_msg()
         if last_tick == None:
             last_tick = time.time()
-            # print("setted tick time")
+            print("setted tick time")
         else:
             if time.time() - last_tick > 5:
                 send_ping()
                 last_tick = time.time()
-                # print("Sent ping!")
+                print("Sent ping!")
                 #b_id = [0xC3, 0x01, 0x38, 0x01]
                 #r_id = [0xCE, 0x73, 0x55]
                 #radiomessage = protocol_handler.elero.construct_msg(remote_addr=r_id, blind_addr=b_id, command="Check")
@@ -80,19 +80,19 @@ def sub_cb(topic, msg):
 
 
 def connect_and_subscribe(client_name, mqtt_server, mqtt_port, topic_sub):
-    # print(f"Connecting to broker {mqtt_server}...")
+    print(f"Connecting to broker {mqtt_server}...")
     client = MQTTClient(client_name, mqtt_server, user="esp_pub", password="esp_pub", port=mqtt_port, keepalive=60,
                         ssl=False)
     client.set_callback(sub_cb)
     client.connect()
     client.subscribe(base_topic+"action/#")
-    # print('Connected to %s MQTT broker, subscribed to %s topic' % (mqtt_server, topic_sub))
+    print('Connected to %s MQTT broker, subscribed to %s topic' % (mqtt_server, topic_sub))
     client.publish(topic=availability_topic, msg="online", retain=False)
     return client
 
 
 def restart_and_reconnect():
-    # print('Failed to connect to MQTT broker. Reconnecting...')
+    print('Failed to connect to MQTT broker. Reconnecting...')
     time.sleep(10)
     machine.reset()
 
@@ -109,7 +109,7 @@ try:
     base_topic = config.get_config()["mqtt"]["base_topic"]
     client = connect_and_subscribe(mqtt_server=mqtt_server, mqtt_port=mqtt_port, client_name=mqtt_client_name,
                                    topic_sub=mqtt_topic)
-    # print("OK!!")
+    print("OK!!")
     radio = Radio(radio_config=config.get_config()["radio"], radio_wiring=config.get_config()["wiring"])
     protocol_handler = Handler(addresses=config.get_config()["addresses"], debug=config.get_config()["debug"],
                                autodiscovery_callback=on_new_blind_discovery)

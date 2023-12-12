@@ -1,10 +1,10 @@
 {
   "wiring": {
-    "spibus": 1,
-    "spics": 15,
+    "spibus": 0,
+    "spics": 0,
     "speed": 5000000,
-    "gdo0": 5,
-    "gdo2": 4
+    "gdo0": 24,
+    "gdo2": 25
   },
   "addresses": [
 

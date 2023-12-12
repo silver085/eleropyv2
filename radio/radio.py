@@ -23,8 +23,8 @@ class Radio:
             data = self.getData()
             svc_handler()
             if data:
-               # print("Data received, firing callback...")
-                callback(data)
+               print("Data received, firing callback...")
+               callback(data)
 
             time.sleep(self.radio_config["sleep_time"])
 

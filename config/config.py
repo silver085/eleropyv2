@@ -28,7 +28,7 @@ class Config:
                 json.dump(self.get_config(), config_file)
             print("Configuration saved.")
         except Exception as err:
-            # print(f"Unable to save configuration file {self.config_path}, error is: {err}")
+            print(f"Unable to save configuration file {self.config_path}, error is: {err}")
             print("Unable to save config file:" + self.config_path + " error is: " + err)
 
     def get_config(self):
