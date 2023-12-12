@@ -11,38 +11,24 @@ class CC1101:
         self.pktRec = True
 
     def __init__(self, spibus, spics, speed, gdo0, gdo2):
-        self.initialised = false
-        if (os.uname()[0] == 'esp32'):
-            from machine import Pin, SPI
-            self.gdo0 = Pin(gdo0, Pin.IN)
-            self.gdo2 = Pin(gdo2, Pin.IN)
-            self.gdo2.irq(trigger=Pin.IRQ_FALLING, handler=self.gdo2Int)
-            self.spi = SPI(spibus, baudrate=speed)
-            self.cs = Pin(spics, Pin.OUT, value=1)
-            self.writeCmd = self.writeCmdEsp
-            self.writeReg = self.writeRegEsp
-            self.writeBuf = self.writeBufEsp
-            self.readReg = self.readRegEsp
-            self.readBuf = self.readBufEsp
-            self.pinVal = self.pinValEsp
-        else:
-            import spidev
-            import RPi.GPIO as GPIO
-            self.gdo0 = gdo0
-            self.gdo2 = gdo2
-            self.spi = spidev.SpiDev(spibus, spics)
-            self.spi.max_speed_hz = speed
-            GPIO.setmode(GPIO.BCM)
-            GPIO.setup(self.gdo0, GPIO.IN)
-            GPIO.setup(self.gdo2, GPIO.IN)
-            GPIO.add_event_detect(self.gdo2, GPIO.FALLING, callback=self.gdo2Int)
-            self.writeCmd = self.writeCmdRpi
-            self.writeReg = self.writeRegRpi
-            self.writeBuf = self.writeBufRpi
-            self.readReg = self.readRegRpi
-            self.readBuf = self.readBufRpi
-            self.pinVal = self.pinValRpi
-            self.GPIO = GPIO
+        self.initialised = False
+        import spidev
+        import RPi.GPIO as GPIO
+        self.gdo0 = gdo0
+        self.gdo2 = gdo2
+        self.spi = spidev.SpiDev(spibus, spics)
+        self.spi.max_speed_hz = speed
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.gdo0, GPIO.IN)
+        GPIO.setup(self.gdo2, GPIO.IN)
+        GPIO.add_event_detect(self.gdo2, GPIO.FALLING, callback=self.gdo2Int)
+        self.writeCmd = self.writeCmdRpi
+        self.writeReg = self.writeRegRpi
+        self.writeBuf = self.writeBufRpi
+        self.readReg = self.readRegRpi
+        self.readBuf = self.readBufRpi
+        self.pinVal = self.pinValRpi
+        self.GPIO = GPIO
 
         self.pktRec = False
 
@@ -146,53 +132,19 @@ class CC1101:
         self.spi.writebytes([cmd])
         time.sleep(0.00004)
 
-    def writeCmdEsp(self, cmd):
-        self.cs(0)
-        self.spi.write(bytearray([cmd]))
-        self.cs(1)
-        time.sleep(0.00004)
-
     def writeRegRpi(self, reg, val):
         self.spi.xfer([reg, val])
-        time.sleep(0.00002)
-
-    def writeRegEsp(self, reg, val):
-        self.cs(0)
-        self.spi.write(bytearray([reg, val]))
-        self.cs(1)
         time.sleep(0.00002)
 
     def writeBufRpi(self, msg):
         self.spi.xfer2(msg)
 
-    def writeBufEsp(self, msg):
-        self.cs(0)
-        buf = bytearray(msg)
-        self.spi.write(buf)
-        self.cs(1)
-
     def readRegRpi(self, reg):
-        return (self.spi.xfer([reg, 0])[1])
-
-    def readRegEsp(self, reg):
-        self.cs(0)
-        result = self.spi.read(2, reg)[1]
-        self.cs(1)
-        return (result)
+        return self.spi.xfer([reg, 0])[1]
 
     def readBufRpi(self, addr, length):
-        reader = [addr] * (length)
-        return (self.spi.xfer2(reader))
-
-    def readBufEsp(self, addr, length):
-        self.cs(0)
-        buf = bytearray([addr] * length)
-        self.spi.write_readinto(buf, buf)
-        self.cs(1)
-        return (buf)
+        reader = [addr] * length
+        return self.spi.xfer2(reader)
 
     def pinValRpi(self, pin):
-        return (self.GPIO.input(pin))
-
-    def pinValEsp(self, pin):
-        return (pin())
+        return self.GPIO.input(pin)
