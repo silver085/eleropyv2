@@ -1,5 +1,5 @@
 import socket
-import ustruct as struct
+import struct
 from ubinascii import hexlify
 
 
