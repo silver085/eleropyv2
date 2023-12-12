@@ -42,7 +42,7 @@ def send_ping():
 def ext_handler():
     global last_tick
     try:
-        client.check_msg()
+
         if last_tick == None:
             last_tick = time.time()
             print("setted tick time")
@@ -107,7 +107,8 @@ try:
     radio = Radio(radio_config=config.get_config()["radio"], radio_wiring=config.get_config()["wiring"])
     protocol_handler = Handler(addresses=config.get_config()["addresses"], debug=config.get_config()["debug"],
                                autodiscovery_callback=on_new_blind_discovery)
+    client.loop_start()
     radio.client_loop(callback=on_receive_data, svc_handler=ext_handler)
-    client.loop_forever()
+
 except OSError as e:
     print(f"Error occurred: {e}")
