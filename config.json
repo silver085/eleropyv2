@@ -1,7 +1,7 @@
 {
   "wiring": {
     "spibus": 0,
-    "spics": 0,
+    "spics": 8,
     "speed": 5000000,
     "gdo0": 24,
     "gdo2": 25
