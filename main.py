@@ -39,10 +39,8 @@ import time
 
 def ext_handler():
     global last_tick
+    print(f"Marcstate reg status is : {radio.get_marcstate_reg()}")
     client.loop_read()
-    if time.time() - last_tick >= 1:
-        last_tick = time.time()
-        print(f"Marcstate reg status is : {radio.get_marcstate_reg()}")
 
 
 def sub_cb(client, userdata, msg):
