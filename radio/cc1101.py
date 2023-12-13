@@ -2,33 +2,37 @@
 # It might be better to split it but at least the lots of
 # magic numbers (cc1101 configuration, etc) are in one place
 import time
-import subprocess
+import os
+#from conf import conf
 
 
-class CC1101:
+class cc1101():
 
     def gdo2Int(self, Pin):
         self.pktRec = True
 
     def __init__(self, spibus, spics, speed, gdo0, gdo2):
-        self.initialised = False
-        import spidev
-        import RPi.GPIO as GPIO
-        self.gdo0 = gdo0
-        self.gdo2 = gdo2
-        self.spi = spidev.SpiDev(spibus, spics)
-        self.spi.max_speed_hz = speed
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.gdo0, GPIO.IN)
-        GPIO.setup(self.gdo2, GPIO.IN)
-        GPIO.add_event_detect(self.gdo2, GPIO.FALLING, callback=self.gdo2Int)
-        self.writeCmd = self.writeCmdRpi
-        self.writeReg = self.writeRegRpi
-        self.writeBuf = self.writeBufRpi
-        self.readReg = self.readRegRpi
-        self.readBuf = self.readBufRpi
-        self.pinVal = self.pinValRpi
-        self.GPIO = GPIO
+
+        if (os.uname()[0] == 'esp32'):
+           pass
+        else:
+            import spidev
+            import RPi.GPIO as GPIO
+            self.gdo0 = gdo0
+            self.gdo2 = gdo2
+            self.spi = spidev.SpiDev(spibus, spics)
+            self.spi.max_speed_hz = speed
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(self.gdo0, GPIO.IN)
+            GPIO.setup(self.gdo2, GPIO.IN)
+            GPIO.add_event_detect(self.gdo2, GPIO.FALLING, callback=self.gdo2Int)
+            self.writeCmd = self.writeCmdRpi
+            self.writeReg = self.writeRegRpi
+            self.writeBuf = self.writeBufRpi
+            self.readReg = self.readRegRpi
+            self.readBuf = self.readBufRpi
+            self.pinVal = self.pinValRpi
+            self.GPIO = GPIO
 
         self.pktRec = False
 
@@ -81,10 +85,8 @@ class CC1101:
         print("Waiting for clear channel...")
         while (self.pinVal(self.gdo0) == 0):
             time.sleep(0.0001)
-            #subprocess.run(["sleep", "0.0001"])
             print(".", end='')
         print("channel cleared");
-        self.initialised = True
 
     def transmit(self, msg):
 
@@ -94,38 +96,27 @@ class CC1101:
         self.writeCmd(0x34)
 
         start = time.time_ns()
-        while self.pinVal(self.gdo0) == 0:
-            print(f" Marcstate reg status during gd0 = 0 is : {self.readReg(0xF5)}")
-            time.sleep(0.0005)
-
         while (self.pinVal(self.gdo0) == 0) and ((time.time_ns() - start) < 50000000):
             time.sleep(0.005)
-            #subprocess.run(["sleep", "0.005"])
 
         if (self.pinVal(self.gdo0) == 0):
             print("TIMEOUT")
         else:
-            print(f"Before Write Marcstate reg status is : {self.readReg(0xF5)}")
             self.writeBuf([0x7F] + msg)
-            print(f"After Write Marcstate reg status is : {self.readReg(0xF5)}")
 
         time.sleep(0.00004)
-        #subprocess.run(["sleep", "0.00004"])
         self.writeCmd(0x35)
-        print(f"After Write Marcstate reg status is : {self.readReg(0xF5)}")
 
         start = time.time_ns()
         while (self.readReg(0xF5) != 0x13) and ((time.time_ns() - start) < 50000000):
-            print(f"Reg 0xF5: {self.readReg(0xF5)}")
             time.sleep(0.005)
-            #subprocess.run(["sleep", "0.005"])
+
         print("sent: ", ''.join('{:02X}:'.format(a) for a in msg), self.readReg(0xF5))
 
     def checkBuffer(self):
         data = None
         if (self.pktRec):
             time.sleep(0.00002)
-            #subprocess.run(["sleep", "0.00002"])
             self.pktRec = False
             bytes_in_fifo = self.readReg(0xFB)
             if (bytes_in_fifo >= 20) and (bytes_in_fifo < 30):
@@ -143,20 +134,54 @@ class CC1101:
     def writeCmdRpi(self, cmd):
         self.spi.writebytes([cmd])
         time.sleep(0.00004)
-        #subprocess.run(["sleep", "0.00004"])
+
+    def writeCmdEsp(self, cmd):
+        self.cs(0)
+        self.spi.write(bytearray([cmd]))
+        self.cs(1)
+        time.sleep(0.00004)
+
     def writeRegRpi(self, reg, val):
         self.spi.xfer([reg, val])
         time.sleep(0.00002)
-        #subprocess.run(["sleep", "0.00002"])
+
+    def writeRegEsp(self, reg, val):
+        self.cs(0)
+        self.spi.write(bytearray([reg, val]))
+        self.cs(1)
+        time.sleep(0.00002)
+
     def writeBufRpi(self, msg):
         self.spi.xfer2(msg)
 
+    def writeBufEsp(self, msg):
+        self.cs(0)
+        buf = bytearray(msg)
+        self.spi.write(buf)
+        self.cs(1)
+
     def readRegRpi(self, reg):
-        return self.spi.xfer([reg, 0])[1]
+        return (self.spi.xfer([reg, 0])[1])
+
+    def readRegEsp(self, reg):
+        self.cs(0)
+        result = self.spi.read(2, reg)[1]
+        self.cs(1)
+        return (result)
 
     def readBufRpi(self, addr, length):
-        reader = [addr] * length
-        return self.spi.xfer2(reader)
+        reader = [addr] * (length)
+        return (self.spi.xfer2(reader))
+
+    def readBufEsp(self, addr, length):
+        self.cs(0)
+        buf = bytearray([addr] * length)
+        self.spi.write_readinto(buf, buf)
+        self.cs(1)
+        return (buf)
 
     def pinValRpi(self, pin):
-        return self.GPIO.input(pin)
+        return (self.GPIO.input(pin))
+
+    def pinValEsp(self, pin):
+        return (pin())
