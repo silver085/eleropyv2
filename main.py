@@ -39,7 +39,6 @@ import time
 
 def ext_handler():
     global last_tick
-    print(f"Marcstate reg status is : {radio.get_marcstate_reg()}")
     client.loop_read()
 
 
@@ -50,6 +49,7 @@ def sub_cb(client, userdata, msg):
     destination = destination_str.split("/")
     radiomessage = protocol_handler.buildMsg(destination[0], destination[1], str_payload)
     print(radiomessage)
+    print(f"Marcstate reg status is : {radio.get_marcstate_reg()}")
     radio.raw_transmit(radiomessage, 3)
 
 

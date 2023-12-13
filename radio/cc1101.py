@@ -101,11 +101,14 @@ class CC1101:
         if (self.pinVal(self.gdo0) == 0):
             print("TIMEOUT")
         else:
+            print(f"Before Write Marcstate reg status is : {self.readReg(0xF5)}")
             self.writeBuf([0x7F] + msg)
+            print(f"After Write Marcstate reg status is : {self.readReg(0xF5)}")
 
         time.sleep(0.00004)
         #subprocess.run(["sleep", "0.00004"])
         self.writeCmd(0x35)
+        print(f"After Write Marcstate reg status is : {self.readReg(0xF5)}")
 
         start = time.time_ns()
         while (self.readReg(0xF5) != 0x13) and ((time.time_ns() - start) < 50000000):
