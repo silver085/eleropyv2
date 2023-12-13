@@ -94,6 +94,10 @@ class CC1101:
         self.writeCmd(0x34)
 
         start = time.time_ns()
+        while self.pinVal(self.gdo0) == 0:
+            print(f" Marcstate reg status during gd0 = 0 is : {self.readReg(0xF5)}")
+            time.sleep(0.0005)
+
         while (self.pinVal(self.gdo0) == 0) and ((time.time_ns() - start) < 50000000):
             time.sleep(0.005)
             #subprocess.run(["sleep", "0.005"])
