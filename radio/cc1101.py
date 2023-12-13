@@ -95,7 +95,6 @@ class CC1101:
 
         start = time.time_ns()
         while (self.pinVal(self.gdo0) == 0) and ((time.time_ns() - start) < 50000000):
-            pass
             time.sleep(0.005)
             #subprocess.run(["sleep", "0.005"])
 
@@ -110,7 +109,7 @@ class CC1101:
 
         start = time.time_ns()
         while (self.readReg(0xF5) != 0x13) and ((time.time_ns() - start) < 50000000):
-            pass
+            print(f"Reg 0xF5: {self.readReg(0xF5)}")
             time.sleep(0.005)
             #subprocess.run(["sleep", "0.005"])
         print("sent: ", ''.join('{:02X}:'.format(a) for a in msg), self.readReg(0xF5))
