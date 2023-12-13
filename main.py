@@ -40,7 +40,7 @@ import time
 def ext_handler():
     global last_tick
     client.loop_read()
-    if last_tick - time.time() >= 1:
+    if time.time() - last_tick >= 1:
         last_tick = time.time()
         print(f"Marcstate reg status is : {radio.get_marcstate_reg()}")
 
