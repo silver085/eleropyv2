@@ -35,6 +35,7 @@ def on_receive_data(data):
 
 def ext_handler():
     client.loop_read()
+    print(f"Marcstate reg status is : {radio.get_marcstate_reg()}")
 
 
 def sub_cb(client, userdata, msg):

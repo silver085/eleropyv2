@@ -34,3 +34,6 @@ class Radio:
                 self.radio.transmit(data)
         else:
             print("Message not sent, no active radio.")
+
+    def get_marcstate_reg(self):
+        return self.radio.readReg(0xF5)
