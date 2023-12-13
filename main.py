@@ -29,13 +29,20 @@ def on_receive_data(data):
     if rcv is not None:
         client.publish(topic=base_topic + rcv["remote"] + "/" + rcv["blind_id"] + "/availability", payload="online")
         if rcv["action"] == "position":
-            client.publish(topic=base_topic + rcv["remote"] + "/" + rcv["blind_id"] + "/status", payload=rcv["position"])
+            client.publish(topic=base_topic + rcv["remote"] + "/" + rcv["blind_id"] + "/status",
+                           payload=rcv["position"])
     pass
 
 
+import time
+
+
 def ext_handler():
+    global last_tick
     client.loop_read()
-    print(f"Marcstate reg status is : {radio.get_marcstate_reg()}")
+    if last_tick - time.time() >= 1:
+        last_tick = time.time()
+        print(f"Marcstate reg status is : {radio.get_marcstate_reg()}")
 
 
 def sub_cb(client, userdata, msg):
@@ -70,6 +77,7 @@ def connect_and_subscribe(client_name, mqtt_server, mqtt_port, topic_sub):
 
 
 try:
+    last_tick = time.time()
     config = Config()
     mqtt_server = config.get_config()["mqtt"]["server_address"]
     mqtt_port = config.get_config()["mqtt"]["server_port"]
